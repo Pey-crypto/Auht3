@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Auht</string>
+    <string name="LoadThirtyThree">Completed Device Credentials</string>
+    <string name="LoadSixtySix">Completed OTP</string>
+    <string name="LoadHund">Completed Location</string>
+    <string name="BegThirtyThree">Verifying Device Credentials</string>
+    <string name="BegSixtySix">Verifying OTP</string>
+    <string name="BegHund">Verifying Location</string>
+</resources>
