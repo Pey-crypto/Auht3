@@ -2,16 +2,16 @@
 MITS Auth App
 
 Under Development
-
-
-Completed
+<br>
+<br>
+Completed<br>
 1> Biometric with Fallback 
-
-Not Done
-1> OTP 
-2> Location
-3> UI 
-
+<br>
+Not Done<br>
+1> OTP <br>
+2> Location<br>
+3> UI <br>
+<br>
 To run project 
 Please run the project in android Studio
 1> sync the gradle files to obtain androidx.biometric
