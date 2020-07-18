@@ -10,7 +10,7 @@ Completed<br>
 <br>
 <br>
 Not Done<br>
-1> OTP <br>
+1> OTP(This might be un necessary) <br>
 2> Location<br>
 3> UI <br>
 <br>
