@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -20,11 +21,13 @@ import com.scottyab.rootbeer.RootBeer;
 import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int REQUEST_BACKGROUND_LOCATION =0 ;
+    private static final int REQUEST_FINE_LOCATION =0 ;
     private Executor executor;
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
     private FusedLocationProviderClient fusedLocationClient;
-    int flag1,flag2,flag3=0;
+    private Object MainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
                 super.onAuthenticationSucceeded(result);
                 Toast.makeText(getApplicationContext(),
                         "Auht Authenticated", Toast.LENGTH_SHORT).show();
-                        flag1 =1;
             }
 
             @Override
@@ -69,28 +71,32 @@ public class MainActivity extends AppCompatActivity {
                 .setConfirmationRequired(false)
                 .build();
         biometricPrompt.authenticate(promptInfo);
+
+       // This block deals with root detection
+
         RootBeer rootBeer = new RootBeer(this);
         if(rootBeer.isRooted()){
             Toast.makeText(getApplicationContext(),"Device is Rooted",Toast.LENGTH_LONG).show();
         }
         else{
-            Toast.makeText(getApplicationContext(),"Okay",Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(),"Safe Device",Toast.LENGTH_LONG).show();
         }
+
+
+        //Permissions Request Block
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            Toast.makeText(getApplicationContext(),"Permission Request",Toast.LENGTH_LONG).show();
-            return;
+            Toast.makeText(getApplicationContext(),"Grant Access for Location",Toast.LENGTH_LONG).show();
+            androidx.core.app.ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_FINE_LOCATION);
+            androidx.core.app.ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},REQUEST_BACKGROUND_LOCATION);
         }
-       // else{
-            //Toast.makeText(getApplicationContext(),"Activated",Toast.LENGTH_LONG).show();
-            //flag2=1;
-        //}
+       else {
+            Toast.makeText(getApplicationContext(), "Activated", Toast.LENGTH_LONG).show();
+        }
+
+
+
+
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
