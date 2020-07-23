@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.scottyab.rootbeer.RootBeer;
 
 import java.util.concurrent.Executor;
 
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
     private FusedLocationProviderClient fusedLocationClient;
+    int flag1,flag2,flag3=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
                 super.onAuthenticationSucceeded(result);
                 Toast.makeText(getApplicationContext(),
                         "Auht Authenticated", Toast.LENGTH_SHORT).show();
+                        flag1 =1;
             }
 
             @Override
@@ -66,7 +69,13 @@ public class MainActivity extends AppCompatActivity {
                 .setConfirmationRequired(false)
                 .build();
         biometricPrompt.authenticate(promptInfo);
-
+        RootBeer rootBeer = new RootBeer(this);
+        if(rootBeer.isRooted()){
+            Toast.makeText(getApplicationContext(),"Device is Rooted",Toast.LENGTH_LONG).show();
+        }
+        else{
+            Toast.makeText(getApplicationContext(),"Okay",Toast.LENGTH_LONG).show();
+        }
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -75,8 +84,13 @@ public class MainActivity extends AppCompatActivity {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            Toast.makeText(getApplicationContext(),"Permission Request",Toast.LENGTH_LONG).show();
             return;
         }
+       // else{
+            //Toast.makeText(getApplicationContext(),"Activated",Toast.LENGTH_LONG).show();
+            //flag2=1;
+        //}
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
@@ -84,10 +98,12 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "Got Location", Toast.LENGTH_SHORT)
                                 .show();
                         if (location != null) {
-                            Toast.makeText(getApplicationContext(),"k", Toast.LENGTH_LONG)
+                            Toast.makeText(getApplicationContext(), "k", Toast.LENGTH_LONG)
                                     .show();
                         }
                     }
                 });
+
     }
+
 }
