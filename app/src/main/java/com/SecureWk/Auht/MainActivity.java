@@ -11,6 +11,7 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -76,22 +77,23 @@ public class MainActivity extends AppCompatActivity {
 
         RootBeer rootBeer = new RootBeer(this);
         if(rootBeer.isRooted()){
-            Toast.makeText(getApplicationContext(),"Device is Rooted",Toast.LENGTH_LONG).show();
+            Log.e("Unsafe","Device Image Modified, check for Fake GPS Module");
         }
         else{
-            Toast.makeText(getApplicationContext(),"Safe Device",Toast.LENGTH_LONG).show();
+            Log.d("Safe","Maybe want to check CTS, But later");
         }
 
 
         //Permissions Request Block
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Toast.makeText(getApplicationContext(),"Grant Access for Location",Toast.LENGTH_LONG).show();
+            Log.d("Awaiting Permissions","Grant Device Resources");
             androidx.core.app.ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_FINE_LOCATION);
             androidx.core.app.ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},REQUEST_BACKGROUND_LOCATION);
+
         }
        else {
-            Toast.makeText(getApplicationContext(), "Activated", Toast.LENGTH_LONG).show();
+            Log.d("Permissions Granted","Fully Activated");
         }
 
 
