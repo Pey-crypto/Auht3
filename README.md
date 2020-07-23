@@ -25,3 +25,9 @@ Please run the project in android Studio<br>
 <br>
 <br>and also try using Androidx libraries for everything as this ensures compatiability
 <br>I might Intergrate Firebase and MongoDB
+
+
+<br>
+Logs:
+<br>
+Fixed Location Permission and Authentication
