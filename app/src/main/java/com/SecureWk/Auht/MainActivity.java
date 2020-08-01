@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 super.onAuthenticationSucceeded(result);
                 Toast.makeText(getApplicationContext(),
                         "Auht Authenticated", Toast.LENGTH_SHORT).show();
-                Check2();
+                mainCheck();
             }
 
             @Override
@@ -75,12 +75,45 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         biometricPrompt.authenticate(promptInfo);
 
+    }
+
+    private boolean Final() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION);
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location != null) {
+                                Log.e("MAf", Double.toString(location.getLatitude()));
+                                Log.e("Maf", Double.toString(location.getLongitude()));
+                            }
+                        }
+                    });
+
+        }
+        return false;
+    }
+
+    private boolean Root(){
+        RootBeer rootBeer = new RootBeer(this);
+        if (rootBeer.isRooted()) {
+            Log.e("Unsafe", "Device Image Modified, check for Fake GPS Module");
+            return true;
+        } else {
+            Log.e("Safe", "Maybe want to check CTS, But later");
+            return false;
+        }
+
+    }
+
+    private boolean LocaPerm(){
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
         boolean gps_enabled = false;
         boolean network_enabled = false;
         try {
             gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
-            Check();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -98,31 +131,19 @@ public class MainActivity extends AppCompatActivity {
                     .show();
 
         }
-        Check();
+        return gps_enabled;
     }
 
-    private void Check() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION);
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            Log.e("MAf",Double.toString(location.getLatitude()));
-                            Log.e("Maf",Double.toString(location.getLongitude()));
-                        }
-                    });
+    private void mainCheck(){
+        boolean a = Root();
+        boolean b = LocaPerm();
+        boolean c = Final();
 
+        if (a && b == b && c){
+            Toast.makeText(getApplicationContext(),"Verified",Toast.LENGTH_LONG);
         }
-    }
-
-    private void Check2(){
-        RootBeer rootBeer = new RootBeer(this);
-        if (rootBeer.isRooted()) {
-            Log.e("Unsafe", "Device Image Modified, check for Fake GPS Module");
-        } else {
-            Log.e("Safe", "Maybe want to check CTS, But later");
+        else{
+            Toast.makeText(getApplicationContext(),"False",Toast.LENGTH_LONG);
         }
 
     }
