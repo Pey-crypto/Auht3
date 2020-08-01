@@ -28,7 +28,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'com.scottyab:rootbeer-lib:0.0.8'
     implementation 'androidx.biometric:biometric:1.0.1'
-    implementation 'androidx.activity:activity:1.1.0'
+    implementation 'androidx.activity:activity:1.2.0-alpha07'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
 

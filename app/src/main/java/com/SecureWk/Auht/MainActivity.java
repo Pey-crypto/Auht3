@@ -1,18 +1,22 @@
 package com.SecureWk.Auht;
 
+import android.Manifest;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-
-import android.Manifest;
-import android.app.Activity;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -22,13 +26,11 @@ import com.scottyab.rootbeer.RootBeer;
 import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int REQUEST_BACKGROUND_LOCATION =0 ;
-    private static final int REQUEST_FINE_LOCATION =0 ;
+    private static final int REQUEST_FINE_LOCATION = 0;
     private Executor executor;
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
     private FusedLocationProviderClient fusedLocationClient;
-    private Object MainActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +45,7 @@ public class MainActivity extends AppCompatActivity {
                                               @NonNull CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
                 Toast.makeText(getApplicationContext(),
-                        "Auht error: " + errString, Toast.LENGTH_SHORT)
-                        .show();
+                        "Auht error: " + errString, Toast.LENGTH_SHORT).show();
                 System.exit(1);
             }
 
@@ -54,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 super.onAuthenticationSucceeded(result);
                 Toast.makeText(getApplicationContext(),
                         "Auht Authenticated", Toast.LENGTH_SHORT).show();
+                Check2();
             }
 
             @Override
@@ -73,44 +75,55 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         biometricPrompt.authenticate(promptInfo);
 
-       // This block deals with root detection
-
-        RootBeer rootBeer = new RootBeer(this);
-        if(rootBeer.isRooted()){
-            Log.e("Unsafe","Device Image Modified, check for Fake GPS Module");
+        LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
+        boolean gps_enabled = false;
+        boolean network_enabled = false;
+        try {
+            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            Check();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        else{
-            Log.d("Safe","Maybe want to check CTS, But later");
+        if (!gps_enabled && !network_enabled) {
+            new AlertDialog.Builder(MainActivity.this)
+                    .setMessage("Enable Location")
+                    .setPositiveButton("Settings", new
+                            DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                }
+                            })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+
         }
+        Check();
+    }
 
-
-        //Permissions Request Block
-
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            Log.d("Awaiting Permissions","Grant Device Resources");
-            androidx.core.app.ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_FINE_LOCATION);
-            androidx.core.app.ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},REQUEST_BACKGROUND_LOCATION);
-
-        }
-       else {
-            Log.d("Permissions Granted","Fully Activated");
-        }
-
-
-
-
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        Toast.makeText(getApplicationContext(), "Got Location", Toast.LENGTH_SHORT)
-                                .show();
-                        if (location != null) {
-                            Toast.makeText(getApplicationContext(), "k", Toast.LENGTH_LONG)
-                                    .show();
+    private void Check() {
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION);
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            Log.e("MAf",Double.toString(location.getLatitude()));
+                            Log.e("Maf",Double.toString(location.getLongitude()));
                         }
-                    }
-                });
+                    });
+
+        }
+    }
+
+    private void Check2(){
+        RootBeer rootBeer = new RootBeer(this);
+        if (rootBeer.isRooted()) {
+            Log.e("Unsafe", "Device Image Modified, check for Fake GPS Module");
+        } else {
+            Log.e("Safe", "Maybe want to check CTS, But later");
+        }
 
     }
 
