@@ -79,24 +79,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean Final() {
-        Log.e("FAILED","jM");
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION);
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                                Log.d("MAf", Double.toString(location.getLatitude()));
-                                Log.d("Maf", Double.toString(location.getLongitude()));
-                        }
-                    });
-
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_FINE_LOCATION);
         }
-        return false;
-    }
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        Log.e("Latitude", Double.toString(location.getLatitude()));
+                        Log.e("Speed", Double.toString(location.getSpeed()));
+                        Log.e("Longitude",Double.toString(location.getLongitude()));
+                    }
+                });
+        return true;
+        }
 
-    private boolean Root(){
+    private boolean Root() {
         RootBeer rootBeer = new RootBeer(this);
         if (rootBeer.isRooted()) {
             Log.e("Unsafe", "Device Image Modified, check for Fake GPS Module");
@@ -109,9 +108,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private boolean LocaPerm(){
+    private boolean LocaPerm() {
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-        boolean gps_enabled= false;
+        boolean gps_enabled = false;
         boolean network_enabled = false;
         try {
             gps_enabled = LocationManagerCompat.isLocationEnabled(lm);
@@ -130,18 +129,21 @@ public class MainActivity extends AppCompatActivity {
                             })
                     .setNegativeButton("Cancel", null)
                     .show();
-            return LocationManagerCompat.isLocationEnabled(lm);
         }
-
-        Log.e("Status",Boolean.toString(LocationManagerCompat.isLocationEnabled(lm)));
+        Log.e("Status", Boolean.toString(LocationManagerCompat.isLocationEnabled(lm)));
+        return LocationManagerCompat.isLocationEnabled(lm);
     }
 
     private void mainCheck(){
         boolean a = Root();
         boolean b = LocaPerm();
+        boolean c ;
+        if (b != true){
+            LocaPerm();
+        }
         if (b == true) {
             Log.e("Entered","Magice");
-             boolean   c = Final();
+             c = Final();
             if (a && b == b && c) {
                 Toast.makeText(getApplicationContext(), "Verified", Toast.LENGTH_LONG);
             }
