@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.biometric.BiometricPrompt;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.location.LocationManagerCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -78,6 +79,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean Final() {
+        Log.e("FAILED","jM");
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION);
@@ -85,10 +87,8 @@ public class MainActivity extends AppCompatActivity {
                     .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
-                            if (location != null) {
-                                Log.e("MAf", Double.toString(location.getLatitude()));
-                                Log.e("Maf", Double.toString(location.getLongitude()));
-                            }
+                                Log.d("MAf", Double.toString(location.getLatitude()));
+                                Log.d("Maf", Double.toString(location.getLongitude()));
                         }
                     });
 
@@ -108,18 +108,19 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     private boolean LocaPerm(){
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
-        boolean gps_enabled = false;
+        boolean gps_enabled= false;
         boolean network_enabled = false;
         try {
-            gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            gps_enabled = LocationManagerCompat.isLocationEnabled(lm);
         } catch (Exception e) {
             e.printStackTrace();
         }
         if (!gps_enabled && !network_enabled) {
             new AlertDialog.Builder(MainActivity.this)
-                    .setMessage("Enable Location")
+                    .setMessage("Please Enable GPS")
                     .setPositiveButton("Settings", new
                             DialogInterface.OnClickListener() {
                                 @Override
@@ -129,18 +130,21 @@ public class MainActivity extends AppCompatActivity {
                             })
                     .setNegativeButton("Cancel", null)
                     .show();
-
+            return LocationManagerCompat.isLocationEnabled(lm);
         }
-        return gps_enabled;
+
+        Log.e("Status",Boolean.toString(LocationManagerCompat.isLocationEnabled(lm)));
     }
 
     private void mainCheck(){
         boolean a = Root();
         boolean b = LocaPerm();
-        boolean c = Final();
-
-        if (a && b == b && c){
-            Toast.makeText(getApplicationContext(),"Verified",Toast.LENGTH_LONG);
+        if (b == true) {
+            Log.e("Entered","Magice");
+             boolean   c = Final();
+            if (a && b == b && c) {
+                Toast.makeText(getApplicationContext(), "Verified", Toast.LENGTH_LONG);
+            }
         }
         else{
             Toast.makeText(getApplicationContext(),"False",Toast.LENGTH_LONG);
