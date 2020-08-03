@@ -32,8 +32,8 @@ Anyone with ideas?
 
 Not Done<br>
 1> UI <br>
-2> Phase 2 Ground Survey of GeoFences
-3> Database
+2> Phase 2 Ground Survey of GeoFences<br>
+3> Database<br>
 <br>
 <br>
 To run project<br> 
