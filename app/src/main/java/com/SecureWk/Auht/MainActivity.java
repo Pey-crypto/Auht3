@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -20,10 +19,12 @@ import androidx.core.content.ContextCompat;
 import androidx.core.location.LocationManagerCompat;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.scottyab.rootbeer.RootBeer;
 
+import java.util.ArrayList;
 import java.util.concurrent.Executor;
 
 public class MainActivity extends AppCompatActivity {
@@ -32,6 +33,9 @@ public class MainActivity extends AppCompatActivity {
     private BiometricPrompt biometricPrompt;
     private BiometricPrompt.PromptInfo promptInfo;
     private FusedLocationProviderClient fusedLocationClient;
+    private GeofencingClient geofencing;
+    private ArrayList<Geofence> geofenceList;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,21 +82,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private boolean Final() {
+    private void Final() {
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION},REQUEST_FINE_LOCATION);
         }
-        fusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        Log.e("Latitude", Double.toString(location.getLatitude()));
-                        Log.e("Speed", Double.toString(location.getSpeed()));
-                        Log.e("Longitude",Double.toString(location.getLongitude()));
-                    }
-                });
-        return true;
+        geofencing = LocationServices.getGeofencingClient(this);
+        geofenceList.add(new Geofence.Builder()
+        .setRequestId("Muthoot")
+                .setCircularRegion(9.963916,76.408383, (float) 91.6)
+        .setExpirationDuration(900000)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_DWELL)
+                .build());
         }
 
     private boolean Root() {
