@@ -13,12 +13,6 @@ Completed<br>
 <br>
 <br>
 <br>
-Basic Story<br>
-Intial Survey of Muthoot Surrounding areas have indicated non Uniform Land shape Patterns<br>
-That means if one Geo fence is used of a distance 91.6 m from the Main Entrance<br>
-(This was done using Google Maps)<br>
-It would also account area that is not under Muthoot <br>
-This might cause Illegal Authentication of the Students even Without entering the Campus<br>
 
 Update<br>
 Modified the Co-ordinates to map an area within 116.6m<br>
@@ -26,9 +20,6 @@ Fixes the Geofence Issues<br>
 <br>
 <br>
 <br>
-The brute Force Solution<br>
-Implement Multiple Geofences<br>
-but can slow down the app<br>
 
 <br>
 Anyone with ideas?
