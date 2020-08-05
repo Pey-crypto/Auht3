@@ -82,14 +82,16 @@ public class MainActivity extends AppCompatActivity {
         biometricPrompt.authenticate(promptInfo);
 
     }
-
-    private boolean Final() {
-        geofenceList = new ArrayList<Geofence>();
-        boolean k = false;
+    private int PreFinal(){
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION);
         }
+        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+    }
+    private boolean Final() {
+        geofenceList = new ArrayList<Geofence>();
+        boolean k = false;
         geofencing = LocationServices.getGeofencingClient(this);
         geofenceList.add(new Geofence.Builder()
                 .setRequestId("Muthoot")
@@ -110,10 +112,11 @@ public class MainActivity extends AppCompatActivity {
             case Geofence.GEOFENCE_TRANSITION_EXIT:
                 Log.e("JUST","Exited Campus");
                 k = false;
-                 break;
+                break;
 
             default:
                 Log.e("JUST","Geofence Unknown");
+                break;
         }   
         return k;
     }
@@ -160,7 +163,7 @@ public class MainActivity extends AppCompatActivity {
     private void mainCheck(){
         boolean a = Root();
         boolean b = LocaPerm();
-        boolean c ;
+        boolean c;
         if (!b){
             Log.e("3RD","Last permissions");
             LocaPerm();
@@ -170,6 +173,8 @@ public class MainActivity extends AppCompatActivity {
              c = Final();
             if (a && b == b && c) {
                 Log.e( "Verified","Done");
+                Intent intent = new Intent(this,UserDetails.class);
+                startActivity(intent);
             }
         }
         else{
