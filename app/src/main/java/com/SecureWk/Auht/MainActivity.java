@@ -22,6 +22,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
 import com.google.android.gms.location.GeofencingEvent;
+import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationServices;
 import com.scottyab.rootbeer.RootBeer;
 
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private FusedLocationProviderClient fusedLocationClient;
     private GeofencingClient geofencing;
     private ArrayList<Geofence> geofenceList;
+    private int ACTION_LOCATION_SETTING =0;
 
 
     @Override
@@ -82,46 +84,45 @@ public class MainActivity extends AppCompatActivity {
         biometricPrompt.authenticate(promptInfo);
 
     }
-    private int PreFinal(){
+    private boolean Third(){
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION);
         }
-        return ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        boolean j = false;
+        switch (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)) {
+            case 0:
+                j =true;
+                break;
+            case -1:
+                Third();
+                break;
+            default:
+                Log.e("Failed","User has Declined");
+                j = false;
+                break;
+        }
+        return j;
     }
-    private boolean Final() {
-        geofenceList = new ArrayList<Geofence>();
-        boolean k = false;
-        geofencing = LocationServices.getGeofencingClient(this);
+    private GeofencingRequest getGeofencingRequest( ) {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.addGeofences(geofenceList);
+        return builder.build();
+    }
+
+    private boolean Fourth() {
+        geofencing= LocationServices.getGeofencingClient(this);
         geofenceList.add(new Geofence.Builder()
                 .setRequestId("Muthoot")
-                .setCircularRegion(9.963916, 76.408383, (float) 116.6)
-                .setExpirationDuration(900000)
+                .setCircularRegion(23.589906, 58.553785, (float) 116.6)
+                .setExpirationDuration(Geofence.NEVER_EXPIRE)
                 .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_EXIT| Geofence.GEOFENCE_TRANSITION_DWELL|Geofence.GEOFENCE_TRANSITION_ENTER)
                 .setLoiteringDelay(3000)
                 .build());
-        Intent intent = new Intent();
-        GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
-        int trans = geofencingEvent.getGeofenceTransition();
-        switch (trans){
-            case Geofence.GEOFENCE_TRANSITION_DWELL:
-            case Geofence.GEOFENCE_TRANSITION_ENTER:
-                Log.e("Entered","Within Campus");
-                k = true;
-                break;
-            case Geofence.GEOFENCE_TRANSITION_EXIT:
-                Log.e("JUST","Exited Campus");
-                k = false;
-                break;
-
-            default:
-                Log.e("JUST","Geofence Unknown");
-                break;
-        }   
-        return k;
     }
 
-    private boolean Root() {
+    private boolean First() {
         RootBeer rootBeer = new RootBeer(this);
         if (rootBeer.isRooted()) {
             Log.e("Unsafe", "Device Image Modified, check for Fake GPS Module");
@@ -134,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private boolean LocaPerm() {
+    private boolean Second(){
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
         boolean gps_enabled = false;
         boolean network_enabled = false;
@@ -150,7 +151,8 @@ public class MainActivity extends AppCompatActivity {
                             DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                                    Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                                    startActivityForResult(intent, ACTION_LOCATION_SETTING);
                                 }
                             })
                     .setNegativeButton("Cancel", null)
@@ -160,27 +162,22 @@ public class MainActivity extends AppCompatActivity {
         return LocationManagerCompat.isLocationEnabled(lm);
     }
 
-    private void mainCheck(){
-        boolean a = Root();
-        boolean b = LocaPerm();
-        boolean c;
-        if (!b){
-            Log.e("3RD","Last permissions");
-            LocaPerm();
-        }
-        if (b) {
-            Log.e("Entered","Magice");
-             c = Final();
-            if (a && b == b && c) {
-                Log.e( "Verified","Done");
-                Intent intent = new Intent(this,UserDetails.class);
-                startActivity(intent);
-            }
-        }
-        else{
-            Toast.makeText(getApplicationContext(),"False",Toast.LENGTH_LONG);
-        }
 
+
+    private void mainCheck(){
+     boolean a = First();
+     boolean b = Second();
+     boolean c = Third();
+     boolean d =Fourth();
+        Log.e("First",Boolean.toString(a));
+        Log.e("Second",Boolean.toString(b));
+        Log.e("Third",Boolean.toString(c));
+        Log.e("Fourth",Boolean.toString(d));
+
+        if(a&&b == c && d){
+         Intent intent = new Intent(this,UserDetails.class);
+         startActivity(intent);
+     }
     }
 
 }
