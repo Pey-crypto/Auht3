@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.util.Log;
 
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.location.Geofence;
@@ -30,7 +31,7 @@ public class GeofenceHelper extends ContextWrapper {
     }
 
     public  Geofence getGeofence(){
-
+        Log.e("Builder","Geofence added");
         return new Geofence.Builder()
                 .setCircularRegion(Home.latitude,Home.longitude,100)
                 .setRequestId("Home")
@@ -45,6 +46,7 @@ public class GeofenceHelper extends ContextWrapper {
         }
         Intent BroaCast = new Intent(this,GeofenceBroadcastReciever.class);
         pendingIntent = PendingIntent.getBroadcast(this,BROCODE,BroaCast,PendingIntent.FLAG_UPDATE_CURRENT);
+        Log.e("Pending Intent","Called Reciever");
         return  pendingIntent;
     }
 

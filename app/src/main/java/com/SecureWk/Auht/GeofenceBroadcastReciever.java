@@ -21,13 +21,19 @@ public class GeofenceBroadcastReciever extends BroadcastReceiver {
             case Geofence.GEOFENCE_TRANSITION_ENTER:
             case Geofence.GEOFENCE_TRANSITION_DWELL:
                 Log.e("User Status", "Within Radius");
+                Intent msg = new Intent(context,Drop.class);
+                msg.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(msg);
                 break;
             case Geofence.GEOFENCE_TRANSITION_EXIT:
                 Log.e("User Status", "Outside Radius");
+                Intent msg2 = new Intent(context,Failed.class);
+                msg2.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK|Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(msg2);
                 break;
             default:
                 Log.e("Failed", "Failed");
-
+                break;
         }
     }
 }

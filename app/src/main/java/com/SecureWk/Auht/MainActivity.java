@@ -1,5 +1,4 @@
 package com.SecureWk.Auht;
-
 import android.Manifest;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
@@ -18,6 +17,8 @@ import androidx.biometric.BiometricPrompt;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.location.LocationManagerCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingClient;
@@ -63,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
                 super.onAuthenticationSucceeded(result);
                 Toast.makeText(getApplicationContext(),
                         "Auht Authenticated", Toast.LENGTH_SHORT).show();
-                mainCheck();
+                lod();
             }
 
             @Override
@@ -85,11 +86,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private boolean Fourth() {
+    private void Geofencer() {
         Geofence geofence = geofenceHelper.getGeofence();
         GeofencingRequest geofencingRequest = geofenceHelper.getGeofencingRequest(geofence);
         PendingIntent pendingIntent = geofenceHelper.getPendingIntent();
-        GeofenceBroadcastReciever geo = new GeofenceBroadcastReciever();
         geofencingClient.addGeofences(geofencingRequest, pendingIntent)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
@@ -104,35 +104,9 @@ public class MainActivity extends AppCompatActivity {
                         Log.d("Failed", "Reasons" + errorMessage);
                     }
                 });
-       //Right now returning True Because Still Figuring out how to use IntentFilter
-        return true;
-    }
-    private void Third() {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION);
-        }
-        if (Build.VERSION.SDK_INT >= 29) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
-                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 20);
-            }
-        }
     }
 
-    private boolean First() {
-        RootBeer rootBeer = new RootBeer(this);
-        if (rootBeer.isRooted()) {
-            Log.e("Unsafe", "Device Image Modified, check for Fake GPS Module");
-            return false;
-        } else {
-            Log.e("Safe", "Maybe want to check CTS, But later");
-            return true;
-        }
-
-    }
-
-
-    private boolean Second(){
+    private boolean Sysloc() {
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
         boolean gps_enabled = false;
         boolean network_enabled = false;
@@ -159,26 +133,38 @@ public class MainActivity extends AppCompatActivity {
         return LocationManagerCompat.isLocationEnabled(lm);
     }
 
-
-
-    private void mainCheck(){
-     boolean a = First();
-     boolean b = Second();
-     Third();
-     boolean d =Fourth();
-        Log.e("First",Boolean.toString(a));
-        Log.e("Second",Boolean.toString(b));
-        Log.e("Fourth",Boolean.toString(d));
-
-        if(a&&b ==  d){
-         Intent intent = new Intent(this,UserDetails.class);
-         startActivity(intent);
-     }
-        else if(a || b == d){
-            Intent failed = new Intent(this,Failed.class);
-            startActivity(failed);
+    private boolean Apploc() {
+        boolean LOCC = false;
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_FINE_LOCATION);
         }
+        if (Build.VERSION.SDK_INT >= 29) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
+            } else if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+                ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION}, 20);
+            }
+        }
+        int cm = ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        if (cm != PackageManager.PERMISSION_GRANTED) {
+            Apploc();
+        } else if (cm == PackageManager.PERMISSION_GRANTED) {
+            LOCC = true;
+        }
+        Log.e("Apploc", Boolean.toString(LOCC));
+        return LOCC;
     }
 
+    private void lod() {
+        //Verify Block
+        //Please enable GPS and Grant Permission for Location Access
+        //Then these methods wiil return true
+
+        Sysloc();
+        Apploc();
+        //This will take up the Rest, If u see a Blank screen
+        // Then you failed the Check i.e Not in Geofence
+        Geofencer();
+    }
 }
