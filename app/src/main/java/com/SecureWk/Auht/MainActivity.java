@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    private boolean Sysloc() {
+    public boolean Sysloc() {
         LocationManager lm = (LocationManager) getSystemService(LOCATION_SERVICE);
         boolean gps_enabled = false;
         boolean network_enabled = false;
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
         return LocationManagerCompat.isLocationEnabled(lm);
     }
 
-    private boolean Apploc() {
+    public boolean Apploc() {
         boolean LOCC = false;
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -157,14 +157,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void lod() {
-        //Verify Block
-        //Please enable GPS and Grant Permission for Location Access
-        //Then these methods wiil return true
-
         Sysloc();
         Apploc();
-        //This will take up the Rest, If u see a Blank screen
-        // Then you failed the Check i.e Not in Geofence
-        Geofencer();
+        Log.e("Status2",Boolean.toString(Sysloc()));
+        if(!Sysloc() || !Apploc()){
+            Intent mis = new Intent(this, Perm.class);
+            startActivity(mis);
+        }
+        else if(Sysloc() && Apploc()){
+            Geofencer();
+        }
     }
 }
