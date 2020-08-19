@@ -11,6 +11,7 @@ import com.google.android.gms.location.GeofencingEvent;
 public class GeofenceBroadcastReciever extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+        Log.e("Entered Reciever","Awaiting");
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             Log.e("Background Reciever", "Error Recieving geofencing Event");
