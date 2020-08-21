@@ -11,7 +11,9 @@ public class RealmConfig extends Application {
         super.onCreate();
         Realm.init(this);
 
-        RealmConfiguration configuration = new RealmConfiguration.Builder().name("Local.realm").build();
+        RealmConfiguration configuration = new RealmConfiguration.Builder()
+                .name("Local.realm")
+                .build();
         Realm.setDefaultConfiguration(configuration);
     }
 }

@@ -1,5 +1,10 @@
 package com.SecureWk.Auht.entity;
 
+import android.icu.util.TimeZone;
+import android.util.Log;
+
+import com.SecureWk.Auht.SNTPClient;
+
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -8,68 +13,70 @@ public class Local extends RealmObject {
 
     @PrimaryKey
     @Required
-    //Thinking of two Options
-    //SHA-256 Generated Hash(Unique)
-    //Unix Epoch
-    private String Date_hash;
+    private String empID;
     @Required
-    private String Date_time;
+    private String ename;
     @Required
-    private String Staff_name;
+    private String jDate;
     @Required
-    private int Total_Days;
-    @Required
-    private int Absent_Days;
-
+    private String ldate;
 
     public Local() {
 
     }
 
-    public Local(String date_time, String staff_name, int total_Days, int absent_Days) {
-        this.Date_time = date_time;
-        this.Staff_name = staff_name;
-        this.Total_Days = total_Days;
-        this.Absent_Days = absent_Days;
+    public Local(String ename, String jDate, String ldate) {
+        this.ename = ename;
+        this.jDate = jDate;
+        this.ldate = ldate;
     }
 
-    public String getDate_hash() {
-        return Date_hash;
+    public String getEmpID() {
+        return empID;
     }
 
-    public void setDate_hash(String date_hash) {
-        Date_hash = date_hash;
+    public void setEmpID(String empID) {
+        this.empID = empID;
     }
 
-    public String getDate_time() {
-        return Date_time;
+    public String getEname() {
+        return ename;
     }
 
-    public void setDate_time(String date_time) {
-        Date_time = date_time;
+    public void setEname(String ename) {
+        this.ename = ename;
     }
 
-    public String getStaff_name() {
-        return Staff_name;
+    public String getjDate() {
+        return jDate;
     }
 
-    public void setStaff_name(String staff_name) {
-        Staff_name = staff_name;
+    public void setjDate(String jDate) {
+        this.jDate = date();
     }
 
-    public int getTotal_Days() {
-        return Total_Days;
+    public String getLdate() {
+        return ldate;
     }
 
-    public void setTotal_Days(int total_Days) {
-        Total_Days = total_Days;
+    public void setLdate(String ldate) {
+        this.ldate = date();
     }
 
-    public int getAbsent_Days() {
-        return Absent_Days;
-    }
+    public String date(){
+        String jam;
+        SNTPClient.getDate(TimeZone.getTimeZone("Asia/Colombo"), new SNTPClient.Listener() {
+            @Override
+            public void onTimeReceived(String rawDate) {
+                Log.e(SNTPClient.TAG, rawDate);
+            }
 
-    public void setAbsent_Days(int absent_Days) {
-        Absent_Days = absent_Days;
+            @Override
+            public void onError(Exception ex) {
+                Log.e(SNTPClient.TAG, ex.getMessage());
+            }
+        });
+        return jam;
     }
 }
+

@@ -12,21 +12,24 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.SecureWk.Auht.entity.Local;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import io.realm.Realm;
+import io.realm.RealmResults;
 
 public class UserDetails extends AppCompatActivity {
 
     private AppBarConfiguration mAppBarConfiguration;
-
+    private Realm realm;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_details);
-        Realm.init(this);
+        realm = Realm.getDefaultInstance();
+        Records();
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
@@ -48,6 +51,11 @@ public class UserDetails extends AppCompatActivity {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+    }
+
+    private void Records() {
+        RealmResults<Local> results = realm.where(Local.class).findAll();
+        
     }
 
     @Override
