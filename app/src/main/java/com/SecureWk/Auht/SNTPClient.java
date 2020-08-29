@@ -214,7 +214,7 @@ public class SNTPClient {
         buffer[offset++] = (byte) (Math.random() * 255.0);
     }
 
-    public static void getDate(TimeZone _timeZone, Listener _listener) {
+    public static void getDate(final TimeZone _timeZone, final Listener _listener) {
 
         new Thread(new Runnable() {
             @Override
@@ -226,11 +226,11 @@ public class SNTPClient {
 
                     long nowAsPerDeviceTimeZone = sntpClient.getNtpTime();
 
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
                     sdf.setTimeZone(_timeZone);
                     String rawDate = sdf.format(nowAsPerDeviceTimeZone);
 
-                    // Log.e(TAG, _timeZone.getID());
+                    Log.e(TAG, _timeZone.getID());
 
                     _listener.onTimeReceived(rawDate);
                 }

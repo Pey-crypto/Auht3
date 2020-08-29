@@ -1,10 +1,5 @@
 package com.SecureWk.Auht.entity;
 
-import android.icu.util.TimeZone;
-import android.util.Log;
-
-import com.SecureWk.Auht.SNTPClient;
-
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -52,7 +47,7 @@ public class Local extends RealmObject {
     }
 
     public void setjDate(String jDate) {
-        this.jDate = date();
+        this.jDate = jDate;
     }
 
     public String getLdate() {
@@ -60,23 +55,7 @@ public class Local extends RealmObject {
     }
 
     public void setLdate(String ldate) {
-        this.ldate = date();
-    }
-
-    public String date(){
-        String jam;
-        SNTPClient.getDate(TimeZone.getTimeZone("Asia/Colombo"), new SNTPClient.Listener() {
-            @Override
-            public void onTimeReceived(String rawDate) {
-                Log.e(SNTPClient.TAG, rawDate);
-            }
-
-            @Override
-            public void onError(Exception ex) {
-                Log.e(SNTPClient.TAG, ex.getMessage());
-            }
-        });
-        return jam;
+        this.ldate = ldate;
     }
 }
 

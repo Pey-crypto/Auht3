@@ -30,7 +30,7 @@ public class GeofenceHelper extends ContextWrapper {
                 .build();
     }
 
-    public  Geofence getGeofence(){
+    public Geofence getGeofence(){
         Log.e("Builder","Geofence added");
         return new Geofence.Builder()
                 .setCircularRegion(Home.latitude,Home.longitude,100)
